@@ -1,20 +1,58 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Telegram Web App</title>
+    <title>Моё Telegram Web App</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+            background-color: #f4f4f9;
+        }
+        h1 {
+            color: #333;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #0088cc;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #0077aa;
+        }
+    </style>
 </head>
 <body>
-    <h1>Hello, Telegram!</h1>
-    <button id="closeBtn">Close WebApp</button>
+
+    <h1>Привет, Telegram!</h1>
+    <p>Это простое Telegram Web App.</p>
+    <button id="closeBtn">Закрыть приложение</button>
 
     <script>
+        // Подключаем Telegram Web App API
         const tg = window.Telegram.WebApp;
+
+        // Настройка темы в зависимости от режима (светлый/тёмный)
+        if (tg.colorScheme === 'dark') {
+            document.body.style.backgroundColor = '#2c2c2e';
+            document.body.style.color = '#fff';
+        }
+
+        // Закрытие Web App при нажатии на кнопку
         document.getElementById('closeBtn').addEventListener('click', () => {
             tg.close();
         });
+
+        // Инициализация Web App
+        tg.ready();
     </script>
+
 </body>
 </html>
