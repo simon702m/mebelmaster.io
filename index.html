@@ -3,55 +3,164 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Моё Telegram Web App</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <title>Приложение для Заметок</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            text-align: center;
-            padding: 50px;
-            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
         }
-        h1 {
-            color: #333;
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            text-align: center;
+        }
+        .block {
+            margin-bottom: 30px;
+        }
+        .block-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .task-list {
+            list-style: none;
+            padding: 0;
+        }
+        .task {
+            background-color: #e3e3e3;
+            margin: 5px 0;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
         }
         button {
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            background-color: #0088cc;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-        }
-        button:hover {
-            background-color: #0077aa;
+            margin-left: 10px;
         }
     </style>
 </head>
 <body>
 
-    <h1>Привет, Telegram!</h1>
-    <p>Это простое Telegram Web App.</p>
-    <button id="closeBtn">Закрыть приложение</button>
+    <div class="container">
+        <!-- Прошлые задачи -->
+        <div class="block" id="past-tasks">
+            <div class="block-header">
+                <h2>Прошлые задачи</h2>
+            </div>
+            <ul class="task-list" id="past-task-list"></ul>
+        </div>
+
+        <!-- Задачи на сегодня -->
+        <div class="block" id="today-tasks">
+            <div class="block-header">
+                <h2>Задачи на сегодня</h2>
+                <button onclick="addTask('today')">Добавить задачу</button>
+            </div>
+            <ul class="task-list" id="today-task-list"></ul>
+        </div>
+
+        <!-- Будущие задачи -->
+        <div class="block" id="future-tasks">
+            <div class="block-header">
+                <h2>Будущие задачи</h2>
+                <button onclick="addTask('future')">Добавить задачу</button>
+            </div>
+            <ul class="task-list" id="future-task-list"></ul>
+        </div>
+    </div>
 
     <script>
-        // Подключаем Telegram Web App API
-        const tg = window.Telegram.WebApp;
+        // Массивы для хранения задач
+        let pastTasks = [];
+        let todayTasks = [];
+        let futureTasks = [];
 
-        // Настройка темы в зависимости от режима (светлый/тёмный)
-        if (tg.colorScheme === 'dark') {
-            document.body.style.backgroundColor = '#2c2c2e';
-            document.body.style.color = '#fff';
+        // Функция для рендеринга задач
+        function renderTasks() {
+            const pastTaskList = document.getElementById('past-task-list');
+            const todayTaskList = document.getElementById('today-task-list');
+            const futureTaskList = document.getElementById('future-task-list');
+
+            pastTaskList.innerHTML = '';
+            todayTaskList.innerHTML = '';
+            futureTaskList.innerHTML = '';
+
+            // Рендерим прошлые задачи
+            pastTasks.forEach((task, index) => {
+                pastTaskList.innerHTML += `<li class="task">${task} 
+                    <button onclick="editTask('past', ${index})">Редактировать</button>
+                    <button onclick="deleteTask('past', ${index})">Удалить</button></li>`;
+            });
+
+            // Рендерим сегодняшние задачи
+            todayTasks.forEach((task, index) => {
+                todayTaskList.innerHTML += `<li class="task">${task} 
+                    <button onclick="editTask('today', ${index})">Редактировать</button>
+                    <button onclick="deleteTask('today', ${index})">Удалить</button></li>`;
+            });
+
+            // Рендерим будущие задачи
+            futureTasks.forEach((task, index) => {
+                futureTaskList.innerHTML += `<li class="task">${task} 
+                    <button onclick="editTask('future', ${index})">Редактировать</button>
+                    <button onclick="deleteTask('future', ${index})">Удалить</button></li>`;
+            });
         }
 
-        // Закрытие Web App при нажатии на кнопку
-        document.getElementById('closeBtn').addEventListener('click', () => {
-            tg.close();
-        });
+        // Функция для добавления задачи
+        function addTask(type) {
+            const task = prompt("Введите задачу:");
+            if (task) {
+                if (type === 'today') {
+                    todayTasks.push(task);
+                } else if (type === 'future') {
+                    futureTasks.push(task);
+                }
+                renderTasks();
+            }
+        }
 
-        // Инициализация Web App
-        tg.ready();
+        // Функция для редактирования задачи
+        function editTask(type, index) {
+            const newTask = prompt("Редактировать задачу:");
+            if (newTask) {
+                if (type === 'past') {
+                    pastTasks[index] = newTask;
+                } else if (type === 'today') {
+                    todayTasks[index] = newTask;
+                } else if (type === 'future') {
+                    futureTasks[index] = newTask;
+                }
+                renderTasks();
+            }
+        }
+
+        // Функция для удаления задачи
+        function deleteTask(type, index) {
+            if (type === 'past') {
+                pastTasks.splice(index, 1);
+            } else if (type === 'today') {
+                todayTasks.splice(index, 1);
+            } else if (type === 'future') {
+                futureTasks.splice(index, 1);
+            }
+            renderTasks();
+        }
+
+        // Пример начальных данных
+        pastTasks = ["Старая задача 1", "Старая задача 2"];
+        todayTasks = ["Сегодняшняя задача 1", "Сегодняшняя задача 2"];
+        futureTasks = ["Будущая задача 1", "Будущая задача 2"];
+
+        // Первичный рендеринг задач
+        renderTasks();
     </script>
 
 </body>
